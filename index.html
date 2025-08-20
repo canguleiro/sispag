@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Paginação - SisPag</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+
+
+    <style>
+        body {
+            font-family: calibri, sans-serif;
+            padding: 20px;
+        }
+       .titulo {
+            font-size: 35px;
+            font-weight: bold;
+            background-color: none;
+            color: #fff;
+            border-radius: 5px;
+            padding: 5px 10px 5px 10px;
+
+        }
+        #cabecalho { 
+           border: none solid: #204966;  
+           border-collapse: collapse; /* remove as bordas entre as células */  
+           width: 100%; /* largura da tabela */  
+           margin-bottom: 5px; /* margem inferior */
+           
+        }
+
+             #cabecalho th, #cabecalho td {  
+                 border: none; /* remove a borda das células */ 
+ 
+             }  
+
+             #cabecalho th {  
+                 text-align: center; /* alinha o texto do cabeçalho ao centro */ 
+            vertical-align: midlle; 
+             }  
+  
+             #cabecalho th:last-child {  
+                 text-align: right; /* alinha o texto da primeira coluna à esquerda */
+                 padding: 5px 10px 5px 0px; 
+             } 
+ 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            
+            background-color: #204966;
+            color: white;
+        }
+
+
+#tabelaRoteiro th, #tabelaRoteiro td {  
+  width: 100px; /* largura padrão para todas as células */  
+}  
+  
+#tabelaRoteiro th:nth-child(1), #tabelaRoteiro td:nth-child(1) {  
+  width: 20px; /* largura para a primeira coluna PÁGINA */
+   
+}  
+  
+#tabelaRoteiro th:nth-child(2), #tabelaRoteiro td:nth-child(2) {  
+  width: 100px; /* largura para a segunda coluna  CHAPÉU */  
+}  
+  
+#tabelaRoteiro th:nth-child(3), #tabelaRoteiro td:nth-child(3) {  
+  width: 100px; /* largura para a terceira coluna TÍTULO */  
+}  
+  
+#tabelaRoteiro th:nth-child(4), #tabelaRoteiro td:nth-child(4) {  
+  width: 180px; /* largura para a quarta coluna OBS */  
+}  
+  
+#tabelaRoteiro th:nth-child(5), #tabelaRoteiro td:nth-child(5) {  
+  width: 40px; /* largura para a quinta coluna REDATOR */  
+}  
+  
+#tabelaRoteiro th:nth-child(6), #tabelaRoteiro td:nth-child(6) {  
+  width: 60px; /* largura para a sexta coluna STATUS */  
+}  
+  
+#tabelaRoteiro th:nth-child(7), #tabelaRoteiro td:nth-child(7) {  
+  width: 85px; /* largura para a sétima coluna AÇÃO */  
+}
+
+#tabelaRoteiro th:nth-child(8), #tabelaRoteiro td:nth-child(8) {  
+  width: 35px; /* largura para a sétima coluna FIXAR */  
+}
+
+        input, select {
+            width: 100%;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            margin: 5px 0;
+            padding: 8px;
+            background-color: #f8f8f8;
+            font-weight: bold;
+            color: #204966;
+            border: 0px solid #204966;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-excluir {
+            width: 25px;
+            background-color: #DD4B39;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-adicionar {
+            width: 25px;
+            background-color: #00A65A;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+     .btn-copiar {
+            width: 25px;
+            background-color: #FFBF00;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-colar {
+            width: 25px;
+            background-color: #FFBF00;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-mover-cima {
+            width: 25px;
+            background-color: #3C8DBC;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-mover-baixo {
+            width: 25px;
+            background-color: #3C8DBC;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-fechar {
+            width: 25px;
+            height: 25px;
+            background-color: #204966;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        
+ 
+td input[type="checkbox"] {  
+  
+  vertical-align: midlle; 
+  width: 20px;  
+  height: 20px;  
+  }  
+
+
+/* Estilo do Menu dropdown */
+
+/* Estilo do container dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Estilo do conteúdo dropdown */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  text-align: left;
+  background-color: #f8f8f8;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links do dropdown */
+.dropdown-content a {
+  color: #204966;
+  padding: 10px 10px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Mostrar o dropdown ao passar o mouse */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Alterar a cor ao passar o mouse sobre o link */
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+
+
+</style>
+</head>
+<body>
+
+<table id="cabecalho">
+<thead>
+<tr>
+<th><span><img src="https://elegis.al.rn.leg.br/elegis-api/elegis-api/parametro/brasao" style="height: 70px; margin-left: 10px;"></svg> </span>
+<th><span class="titulo">SISPAG - REVISTA ALRN 2024</span>
+
+<th><button onclick="salvarDados()" title="Armazena dados localmente">Salvar Dados</button>
+<button onclick="carregarDados()" title="Carrega dados armazenados">Carrega Dados</button>
+<button onclick="limparDados()" title="Limpa dados armazenado">Limpar Dados</button> 
+<button onclick="importarJSON()" title="Importa arquivo no formato .json">Importar Arquivo</button>
+<button onclick="exportarJSON()" title="Exporta arquivo no formato .json">Exportar Arquivo</button> 
+<div class="dropdown">
+  <button class="dropbtn">Gerar PDF</button>
+  <div class="dropdown-content">
+    <a href="#" onclick="exportarPDF()" title="Exporta a tabela completa em PDF">Roteiro Completo</a>
+    <a href="#" onclick="exportarPDFResumo()" title="Exporta resumo da tabela em PDF">Roteiro Resumo</a>
+  </div>
+</div>
+<button onclick="criarPastasDeArquivo()" title="Gerar pastas de arquivos">Estruturar</button>
+<button onclick="mostrarAjuda()" title="Guia do usuário">Ajuda</button>
+</tr>
+</thead>
+</table>
+
+   
+<table id="tabelaRoteiro">
+
+        <thead>
+       <tr>
+                <th>PÁGINA</th>
+                <th>CHAPÉU</th>
+                <th>TÍTULO</th>
+                <th>OBSERVAÇÕES</th>
+                <th>REDATOR</th>
+                <th>STATUS</th>
+                <th>AÇÃO</th>
+                <th>FIXAR</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" placeholder="Página" disabled></td>
+                <td><input type="text" placeholder="CHAPÉU"></td>
+                <td><input type="text" placeholder="Título"></td>
+                <td><input type="text" placeholder="Observações"></td>
+                <td><input type="text" placeholder="Redator"></td>
+                <td>
+                    <select id="statusSelect" onchange="mudarCorSelect(this)">
+                        <option value="Produzir">Produzir</option>
+                        <option value="Editada">Editada</option>  
+                        <option value="NaoEditada">Não Editada</option>  
+                        <option value="Pendente">Pendente</option>  
+                        <option value="Finalizada">Finalizada</option>  
+                    </select>
+                </td>
+                <td>
+                    <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">+</button> 
+                    <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">-</button>
+                    <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">↑</button>  
+                    <button class="btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">↓</button> 
+                    <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">C</button>
+                    <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">V</button>
+                  
+               </td>
+
+               <td>
+                   <input type="checkbox" onclick="toggleButtons(this)" title="Bloquear ação">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#f8f8f8" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+              </td>
+
+            </tr>
+        </tbody>
+    </table>
+   
+<table id="cabecalho">
+<thead>
+<tr>
+<th><button onclick="salvarDados()" title="Armazena dados localmente">Salvar Dados</button>
+<button onclick="carregarDados()" title="Carrega dados armazenados">Carrega Dados</button>
+<button onclick="limparDados()" title="Limpa dados armazenado">Limpar Dados</button> 
+<button onclick="importarJSON()" title="Importa arquivo no formato .json">Importar Arquivo</button>
+<button onclick="exportarJSON()" title="Exporta arquivo no formato .json">Exportar Arquivo</button> 
+<div class="dropdown">
+  <button class="dropbtn">Gerar PDF</button>
+  <div class="dropdown-content">
+    <a href="#" onclick="exportarPDF()" title="Exporta a tabela completa em PDF">Roteiro Completo</a>
+    <a href="#" onclick="exportarPDFResumo()" title="Exporta resumo da tabela em PDF">Roteiro Resumo</a>
+  </div>
+</div>
+<button onclick="criarPastasDeArquivo()" title="Gerar pastas de arquivos">Estruturar</button>
+<button onclick="mostrarAjuda()" title="Saiba mais sobre o SisPag">Ajuda</button>
+</tr>
+</thead>
+</table>
+
+
+    <script>
+
+// MENU DROPDOWN - GERAR PDF
+
+// Função para gerar o PDF completo (Roteiro Completo)
+
+function exportarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('landscape'); // Orientação da página
+
+// Obter a data e hora atual
+  const dataAtual = new Date();
+  const dataFormatada = dataAtual.toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
+  const horaFormatada = dataAtual.toLocaleTimeString('pt-BR', {
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  // Adicionar a data e hora ao PDF (exemplo: no canto superior direito)
+  doc.setFontSize(10); // Tamanho da fonte da data e hora
+  doc.text(`Data: ${dataFormatada} Hora: ${horaFormatada}`, 230, 10); // Adiciona no PDF (posição x, y)  
+  // Título do documento
+
+ // Título do documento  
+  const anoAtual = new Date().getFullYear();  
+  const titulo = `Revista ALRN ${anoAtual}`;  
+  // Edita o título Adiciona um retângulo de fundo ao título   
+  doc.setFillColor(32, 73, 102); // Define a cor de fundo (RGB)   
+  doc.rect(14, 4.5, 45, 7, 'F'); // Desenha o retângulo (x, y, largura, altura, 'F' para preenchimento)    
+  doc.setFontSize(14);  
+  doc.setTextColor('#ffffff');  
+  doc.text(titulo, 15, 10); 
+
+  // Seleciona a tabela no HTML
+  const tabela = document.getElementById('tabelaRoteiro');
+  const linhas = tabela.querySelectorAll('tbody tr');
+  
+  // Pega os dados da tabela para gerar o PDF
+  let data = [];
+
+  linhas.forEach(linha => {
+    const colunas = linha.querySelectorAll('td input, td select');
+    let rowData = [];
+    
+    colunas.forEach((coluna, index) => {
+      // Ignora a última coluna (FIXAR)
+      if (index < colunas.length - 1) {
+        let valor = '';
+        if (coluna.tagName === 'INPUT') {
+          valor = coluna.value;
+        } else if (coluna.tagName === 'SELECT') {
+          valor = coluna.options[coluna.selectedIndex].text;
+        }
+        rowData.push(valor);
+      }
+    });
+
+    data.push(rowData);
+  });
+
+  // Definindo as colunas do cabeçalho
+  const headers = [["PÁGINA", "CHAPÉU", "TÍTULO", "OBSERVAÇÕES", "REDATOR", "STATUS"]];
+
+  // Geração da tabela no PDF com bordas internas e externas
+  doc.autoTable({
+    head: headers,
+    body: data,
+    startY: 20, // Posição de início da tabela
+    theme: 'grid', // Gera as bordas
+    headStyles: {
+      fillColor: [229, 229, 229], // Cor do fundo do cabeçalho
+      textColor: [0, 0, 0], // Cor do texto do cabeçalho
+      fontSize: 10 // Tamanho da fonte do cabeçalho
+    },
+    styles: {
+      lineColor: [193, 193, 193], // Cor das bordas
+      lineWidth: 0.1, // Espessura das bordas
+      fontSize: 10, // Tamanho da fonte do corpo da tabela
+      rowHeight: 3 // Altura das linhas
+    }
+  });
+
+  // Salva o arquivo PDF
+  doc.save(`Roteiro_${titulo}.pdf`);
+}
+
+
+
+// Função para gerar o PDF Resumo
+
+function exportarPDFResumo() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('landscape'); // Orientação da página
+
+  // Obter a data e hora atual
+  const dataAtual = new Date();
+  const dataFormatada = dataAtual.toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
+  const horaFormatada = dataAtual.toLocaleTimeString('pt-BR', {
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  // Adicionar a data e hora ao PDF (exemplo: no canto superior direito)
+  doc.setFontSize(10); // Tamanho da fonte da data e hora
+  doc.text(`Data: ${dataFormatada} Hora: ${horaFormatada}`, 230, 10); // Adiciona no PDF (posição x, y)  
+  
+  // Título do documento
+  const anoAtual = new Date().getFullYear();  
+  const titulo = `Revista ALRN ${anoAtual}`;  
+  // Edita o título Adiciona um retângulo de fundo ao título   
+  doc.setFillColor(32, 73, 102); // Define a cor de fundo (RGB)   
+  doc.rect(14, 4.5, 45, 7, 'F'); // Desenha o retângulo (x, y, largura, altura, 'F' para preenchimento)    
+  doc.setFontSize(14);  
+  doc.setTextColor('#ffffff');  
+  doc.text(titulo, 15, 10); 
+
+  // Seleciona a tabela no HTML
+  const tabela = document.getElementById('tabelaRoteiro');
+  const linhas = tabela.querySelectorAll('tbody tr');
+  
+  // Pega os dados da tabela para gerar o PDF
+  let data = [];
+
+  linhas.forEach(linha => {
+    const colunas = linha.querySelectorAll('td input, td select');
+    let rowData = [];
+    
+    colunas.forEach((coluna, index) => {
+      // Ignora a coluna 'Redator' (que está no índice 4) e a última coluna (Ações)
+      if (index !== 4 && index < colunas.length - 1) {
+        let valor = '';
+        if (coluna.tagName === 'INPUT') {
+          valor = coluna.value;
+        } else if (coluna.tagName === 'SELECT') {
+          valor = coluna.options[coluna.selectedIndex].text;
+        }
+        rowData.push(valor);
+      }
+    });
+
+    data.push(rowData);
+  });
+
+  // Definindo as colunas do cabeçalho, sem a coluna "Redator"
+  const headers = [["PÁGINA", "CHAPÉU", "TÍTULO", "OBSERVAÇÕES", "STATUS"]];
+
+  // Geração da tabela no PDF com bordas internas e externas
+  doc.autoTable({
+    head: headers,
+    body: data,
+    startY: 20, // Posição de início da tabela
+    theme: 'grid', // Gera as bordas
+    headStyles: {
+      fillColor: [229, 229, 229], // Cor do fundo do cabeçalho
+      textColor: [0, 0, 0], // Cor do texto do cabeçalho
+      fontSize: 10 // Tamanho da fonte do cabeçalho
+    },
+    styles: {
+      lineColor: [193, 193, 193], // Cor das bordas
+      lineWidth: 0.1, // Espessura das bordas
+      fontSize: 10, // Tamanho da fonte do corpo da tabela
+      rowHeight: 3 // Altura das linhas
+    }
+  });
+
+
+  // Salva o arquivo PDF
+  doc.save(`Roteiro_${titulo}_resumo.pdf`);
+}
+
+
+// POPULAR TABELA PREVIAMENTE
+
+function preencherTabelaInicial() {
+    const tabela = document.getElementById('tabelaRoteiro').querySelector('tbody');
+    const linhasFixas = [
+        { pagina: 'Capa', chapéu: '', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '2', chapéu: 'GALERIA DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '3', chapéu: 'PALAVRA DO PRESIDENTE', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '4 e 5', chapéu: 'SUMÁRIO E EXPEDIENTE', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '6 e 7', chapéu: 'AGORA É LEI!', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '8 e 9', chapéu: 'RN EM FOTOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '10 e 11', chapéu: 'RN EM FOTOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '12 e 13', chapéu: 'PRODUÇÃO E SERVIÇOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '14 e 15', chapéu: 'LINHA DO TEMPO', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '16 e 17', chapéu: 'ELES FAZEM A ALRN', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '18 e 19', chapéu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '20 e 21', chapéu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: '22 e 23', chapéu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: '' },
+        { pagina: 'Contracapa', chapéu: '', titulo: '', observacoes: '', redator: '', status: '' },
+    ];
+
+    // Limpa a tabela antes de preencher
+    tabela.innerHTML = '';
+
+    linhasFixas.forEach((linha) => {  
+        const tr = document.createElement('tr');  
+        tr.innerHTML = `  
+            <td><input type="text" value="${linha.pagina}" disabled></td>  <!-- Campo 'Página' desabilitado -->
+            <td><input type="text" placeholder="CHAPÉU" value="${linha.chapéu}" ${['GALERIA DOS DEPUTADOS', 'PALAVRA DO PRESIDENTE', 'SUMÁRIO E EXPEDIENTE', 'AGORA É LEI!', 'RN EM FOTOS', 'PRODUÇÃO E SERVIÇOS', 'LINHA DO TEMPO', 'ELES FAZEM A ALRN', 'FRASES DOS DEPUTADOS'].includes(linha.chapéu) ? 'disabled' : ''}></td>   
+            <td><input type="text" placeholder="Título" value="${linha.titulo}"></td>   
+            <td><input type="text" placeholder="Observações" value="${linha.observacoes}"></td>   
+            <td><input type="text" placeholder="Redator" value="${linha.redator}"></td>   
+            <td>   
+              <select id="statusSelect" onchange="mudarCorSelect(this)"> 
+                <option value="Produzir" ${linha.status === 'Produzir' ? 'selected' : ''}>Produzir</option>  
+                <option value="Editada" ${linha.status === 'Editada' ? 'selected' : ''}>Editada</option>   
+                <option value="NaoEditada" ${linha.status === 'NaoEditada' ? 'selected' : ''}>Não Editada</option>   
+                <option value="Pendente" ${linha.status === 'Pendente' ? 'selected' : ''}>Pendente</option>   
+                <option value="Finalizada" ${linha.status === 'Finalizada' ? 'selected' : ''}>Finalizada</option>   
+              </select>   
+            </td>   
+            <td>
+              <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">+</button>   
+              <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">-</button>
+                    <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">↑</button>  
+                    <button class="btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">↓</button> 
+              <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">C</button>
+              <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">V</button> 
+            </td>
+              <td>
+                    <input type="checkbox" onclick="toggleButtons(this)" title="Bloquear ação">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ccc" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+              </td>  
+        `;   
+        tabela.appendChild(tr);   
+    });   
+}
+
+
+// ADICIONAR E EXCLUIR NOVA LINHA
+
+function adicionarLinha(botao) {
+    // Verifica se o checkbox está marcado
+    let row = botao.closest('tr');
+    let checkbox = row.querySelector('input[type="checkbox"]');
+
+    if (checkbox.checked) {
+        alert("A função está bloqueada!");
+        return; // Impede a execução do restante da função
+    }
+
+    const linhaAtual = botao.closest('tr');
+
+    const novaLinha = document.createElement('tr');
+
+    novaLinha.innerHTML = `
+        <td><input type="text" placeholder="Página" disabled></td>
+        <td><input type="text" placeholder="CHAPÉU"></td>
+        <td><input type="text" placeholder="Título"></td>
+        <td><input type="text" placeholder="Observações"></td>
+        <td><input type="text" placeholder="Redator"></td>
+        <td>
+            <select id="statusSelect" onchange="mudarCorSelect(this)">
+                <option value="Produzir">Produzir</option>
+                <option value="Editada">Editada</option>
+                <option value="NaoEditada">Não Editada</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Finalizada">Finalizada</option>
+            </select>
+        </td>
+        <td>
+            <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">+</button>
+            <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">-</button>
+                    <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">↑</button>  
+                    <button class="btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">↓</button> 
+            <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">C</button>
+            <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">V</button>
+                    
+         </td>
+         <td>
+            <input type="checkbox" onclick="toggleButtons(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ccc" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+         </td>
+    `;
+
+    // Insere a nova linha logo abaixo da linha atual
+    linhaAtual.parentNode.insertBefore(novaLinha, linhaAtual.nextSibling);
+
+    // Renumera todas as páginas
+    renumerarPaginas();
+}
+
+// Função para excluir uma linha
+function excluirLinha(botao) {
+    // Verifica se o checkbox está marcado
+    let row = botao.closest('tr');
+    let checkbox = row.querySelector('input[type="checkbox"]');
+
+    if (checkbox.checked) {
+        alert("A função está bloqueada!");
+        return; // Impede a execução do restante da função
+    }
+
+    const linhaAtual = botao.closest('tr');
+    linhaAtual.remove();
+    
+    // Renumera as páginas após a exclusão
+    renumerarPaginas();
+}
+
+
+
+// RENUMERAR PÁGINAS
+
+  function renumerarPaginas() {
+    let paginaAtual = 4; // Ajuste se necessário
+    const excecoes = ['Capa', 'Contracapa', '2', '3']; // Adicione mais exceções aqui
+
+    document.querySelectorAll('#tabelaRoteiro tbody tr').forEach(linha => {
+        const paginaInput = linha.querySelector('td input');
+        const valorPagina = paginaInput.value;
+
+        // Ignora as linhas que estão na lista de exceções
+        if (excecoes.includes(valorPagina)) {
+            return;
+        }
+
+        // Renumera as páginas no formato "Página X e Y"
+        paginaInput.value = `${paginaAtual} e ${paginaAtual + 1}`;
+        paginaAtual += 2;
+    });
+}
+
+
+  // Função para verificar o maior número de página existente
+        function obterUltimaPagina() {
+            const linhas = document.querySelectorAll('#tabelaRoteiro tbody tr');
+            let maiorPagina = 0;
+
+            linhas.forEach((linha) => {
+                const colunaPagina = linha.querySelector('td input[placeholder="Página"]');
+                
+                if (colunaPagina && colunaPagina.value) {
+                    const numeroPagina = parseInt(colunaPagina.value.replace('Página ', ''), 10);
+                    if (numeroPagina > maiorPagina) {
+                        maiorPagina = numeroPagina;
+                    }
+                }
+            });
+
+            return maiorPagina;
+        }
+
+        // Chama a função ao carregar a página para renumerar as páginas inicialmente
+        document.addEventListener('DOMContentLoaded', function() {
+            renumerarPaginas();
+        });
+
+
+// COPIAR LINHA
+  
+function copiarLinha(botao) {  
+  const linha = botao.closest('tr');  
+  const chapéu = linha.cells[1].querySelector('input, select').value;  
+  const título = linha.cells[2].querySelector('input, select').value;  
+  const observações = linha.cells[3].querySelector('input, select').value;  
+  const redator = linha.cells[4].querySelector('input, select').value;  
+  const status = linha.cells[5].querySelector('input, select').value;  
+  
+  const conteudoCopiado = `${chapéu}\n${título}\n${observações}\n${redator}\n${status}`;  
+  
+  navigator.clipboard.writeText(conteudoCopiado)  
+   .then(() => {  
+    alert('Conteúdo copiado para a área de transferência!');  
+   })  
+   .catch(err => {  
+    console.error('Erro ao copiar o conteúdo: ', err);  
+    alert('Erro ao copiar o conteúdo!');  
+   });  
+}
+
+
+// COLAR LINHA
+
+function colarLinha(botao) {  
+  const linha = botao.closest('tr');  
+  
+  navigator.clipboard.readText()  
+   .then(conteudoCopiado => {  
+    const linhas = conteudoCopiado.split('\n');  
+  
+    linha.cells[1].querySelector('input, select').value = linhas[0];  
+    linha.cells[2].querySelector('input, select').value = linhas[1];  
+    linha.cells[3].querySelector('input, select').value = linhas[2];  
+    linha.cells[4].querySelector('input, select').value = linhas[3];  
+    linha.cells[5].querySelector('input, select').value = linhas[4];  
+   })  
+   .catch(err => {  
+    console.error('Erro ao colar o conteúdo: ', err);  
+    alert('Erro ao colar o conteúdo!');  
+   });  
+}
+
+
+// MOVER LINHA
+
+function moverLinhaCima(botao) {  
+  const linha = botao.closest('tr');  
+  const checkbox = linha.cells[7].querySelector('input[type="checkbox"]');  
+  if (checkbox.checked) {  
+   alert("A função está bloqueada!");  
+   return;  
+  }  
+
+  const tabela = linha.parentNode;  
+  const linhaAnterior = linha.previousElementSibling;  
+  
+  if (linhaAnterior) {  
+   tabela.insertBefore(linha, linhaAnterior);  
+  }  
+  
+  renumerarPaginas();  
+}  
+  
+function moverLinhaBaixo(botao) {  
+  const linha = botao.closest('tr');  
+  const checkbox = linha.cells[7].querySelector('input[type="checkbox"]');  
+  if (checkbox.checked) {  
+   alert("A função está bloqueada!");  
+   return;  
+  }  
+
+  const tabela = linha.parentNode;  
+  const linhaProxima = linha.nextElementSibling;  
+  
+  if (linhaProxima) {  
+   tabela.insertBefore(linha, linhaProxima.nextSibling);  
+  }  
+  
+  renumerarPaginas();  
+}
+
+
+// CHECKBOX BLOQUEAR AÇÕES E FIXAR LINHA 
+
+function toggleButtons(checkbox) {
+    // Seleciona a linha atual onde o checkbox foi clicado
+    const linha = checkbox.closest('tr');
+    
+  // Seleciona os botões de adicionar, excluir, mover cima e mover baixo dentro da mesma linha  
+  const btnAdicionar = linha.querySelector('.btn-adicionar');  
+  const btnExcluir = linha.querySelector('.btn-excluir');  
+  const btnMoverCima = linha.querySelector('.btn-mover-cima');  
+  const btnMoverBaixo = linha.querySelector('.btn-mover-baixo'); 
+
+// Se o checkbox estiver marcado, desabilita os botões, caso contrário habilita  
+  if (checkbox.checked) {  
+   btnAdicionar.disabled = true;  
+   btnExcluir.disabled = true;  
+   btnMoverCima.disabled = true;  
+   btnMoverBaixo.disabled = true; 
+  } else {  
+   btnAdicionar.disabled = false;  
+   btnExcluir.disabled = false;  
+   btnMoverCima.disabled = false;  
+   btnMoverBaixo.disabled = false;  
+  }  
+}
+      
+
+// SALVAR DADOS NO LOCAL STOREAGE
+
+function salvarDados() {
+    const linhas = [];
+    document.querySelectorAll('#tabelaRoteiro tbody tr').forEach(linha => {
+        const colunas = linha.querySelectorAll('td input, td select');
+        const dadosLinha = {};
+        dadosLinha.pagina = colunas[0].value;
+        dadosLinha.chapeu = colunas[1].value;
+        dadosLinha.titulo = colunas[2].value;
+        dadosLinha.observacoes = colunas[3].value;
+        dadosLinha.redator = colunas[4].value;
+        dadosLinha.status = colunas[5].value;
+        dadosLinha.checkbox = colunas[6].checked;  // Salva o estado do checkbox
+        linhas.push(dadosLinha);
+    });
+    localStorage.setItem('roteiroRevista', JSON.stringify(linhas));
+    alert('Dados salvos com sucesso!');
+}
+
+// CARREGAR DADOS DO LOCAL STOREAGE
+
+function carregarDados() {
+    const dadosSalvos = localStorage.getItem('roteiroRevista');
+    if (dadosSalvos) {
+        const linhas = JSON.parse(dadosSalvos);
+        const tabela = document.getElementById('tabelaRoteiro').querySelector('tbody');
+        
+        // Limpa a tabela antes de carregar os dados
+        tabela.innerHTML = '';
+
+        linhas.forEach(linha => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" value="${linha.pagina}" disabled></td>
+                <td><input type="text" placeholder="CHAPÉU" value="${linha.chapeu}"></td>
+                <td><input type="text" placeholder="Título" value="${linha.titulo}"></td>
+                <td><input type="text" placeholder="Observações" value="${linha.observacoes}"></td>
+                <td><input type="text" placeholder="Redator" value="${linha.redator}"></td>
+                <td>
+                    <select class="statusSelect" onchange="mudarCorSelect(this)">
+                        <option value="Produzir" ${linha.status === 'Produzir' ? 'selected' : ''}>Produzir</option>
+                        <option value="Editada" ${linha.status === 'Editada' ? 'selected' : ''}>Editada</option>
+                        <option value="NaoEditada" ${linha.status === 'NaoEditada' ? 'selected' : ''}>Não Editada</option>
+                        <option value="Pendente" ${linha.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                        <option value="Finalizada" ${linha.status === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">+</button>
+                    <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">-</button>
+                    <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">↑</button>  
+                    <button class="btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">↓</button> 
+                    <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">C</button>
+                    <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">V</button> 
+                </td>
+                <td>
+                    <input type="checkbox" onclick="toggleButtons(this)" ${linha.checkbox ? 'checked' : ''} title="Bloquear ação">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ccc" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+                </td>
+            `;
+            tabela.appendChild(tr);
+        });
+
+        // Depois de preencher a tabela, aplicar as cores nos selects
+        document.querySelectorAll('.statusSelect').forEach(select => {
+            mudarCorSelect(select);
+        });
+
+        renumerarPaginas(); // Renumera as páginas após carregar os dados
+    } else {
+        alert('Nenhum dado encontrado.');
+    }
+}
+
+// LIMPAR DADOS DO LOCAL STORAGE
+
+function limparDados() {
+    // Exibe um alerta de confirmação
+    if (confirm('Deseja apagar todos os dados?')) {
+        localStorage.removeItem('roteiroRevista');
+        alert('Dados limpos com sucesso!');
+        
+        // Limpa a tabela
+        document.getElementById('tabelaRoteiro').querySelector('tbody').innerHTML = '';
+        
+        // Chama a função para preencher a tabela inicial
+        preencherTabelaInicial();
+    } else {
+        alert('Limpeza de dados cancelada.');
+    }
+}
+
+
+// EXPORTAR DADOS PARA FORMATO .json  
+
+function exportarJSON() {  
+   const linhas = [];  
+   document.querySelectorAll('#tabelaRoteiro tbody tr').forEach(linha => {  
+      const colunas = linha.querySelectorAll('td input, td select');  
+      const dadosLinha = {};  
+      dadosLinha.pagina = colunas[0].value;  
+      dadosLinha.chapeu = colunas[1].value;  
+      dadosLinha.titulo = colunas[2].value;  
+      dadosLinha.observacoes = colunas[3].value;  
+      dadosLinha.redator = colunas[4].value;  
+      dadosLinha.status = colunas[5].value;
+      dadosLinha.checkbox = colunas[6].checked;  // Salva o estado do checkbox  
+      linhas.push(dadosLinha);  
+   });  
+   const json = JSON.stringify(linhas);  
+   const blob = new Blob([json], {type: 'application/json'});  
+   const url = URL.createObjectURL(blob);  
+   const a = document.createElement('a');  
+   a.href = url;  
+   a.download = 'roteiro_revista.json';  
+   a.click();  
+}  
+  
+// IMPORTAR DADOS FORMATO .json  
+
+function importarJSON() {  
+   const input = document.createElement('input');  
+   input.type = 'file';  
+   input.accept = 'application/json';  
+   input.onchange = function() {  
+      const file = input.files[0];  
+      const reader = new FileReader();  
+      reader.onload = function() {  
+        const json = reader.result;  
+        const linhas = JSON.parse(json);  
+        const tabela = document.getElementById('tabelaRoteiro').querySelector('tbody');  
+        tabela.innerHTML = ''; // Limpa a tabela  
+        linhas.forEach(linha => {  
+           const tr = document.createElement('tr');  
+           tr.innerHTML = `  
+              <td><input type="text" value="${linha.pagina}" disabled></td>  
+              <td><input type="text" placeholder="CHAPÉU" value="${linha.chapeu}"></td>  
+              <td><input type="text" placeholder="Título" value="${linha.titulo}"></td>  
+              <td><input type="text" placeholder="Observações" value="${linha.observacoes}"></td>  
+              <td><input type="text" placeholder="Redator" value="${linha.redator}"></td>  
+              <td>  
+                <select id="statusSelect" onchange="mudarCorSelect(this)">
+                   <option value="Produzir" ${linha.status === 'Produzir' ? 'selected' : ''}>Produzir</option>  
+                   <option value="Editada" ${linha.status === 'Editada' ? 'selected' : ''}>Editada</option>  
+                   <option value="NaoEditada" ${linha.status === 'NaoEditada' ? 'selected' : ''}>Não Editada</option>  
+                   <option value="Pendente" ${linha.status === 'Pendente' ? 'selected' : ''}>Pendente</option>  
+                   <option value="Finalizada" ${linha.status === 'Finalizada' ? 'selected' : ''}>Finalizada</option>  
+                </select>  
+              </td>  
+              <td>
+                  
+                <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">+</button>
+                <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">-</button>
+                    <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">↑</button>  
+                    <button class="btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">↓</button> 
+                <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">C</button>
+                <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">V</button>
+                </td>
+                <td>
+                    <input type="checkbox" onclick="toggleButtons(this)" ${linha.checkbox ? 'checked' : ''} title="Bloquear ação">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ccc" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+              </td> 
+           `;  
+           tabela.appendChild(tr);  
+        }); 
+
+// Depois de preencher a tabela, aplicar as cores nos selects
+        document.querySelectorAll('select').forEach(select => {
+            mudarCorSelect(select); // Chama a função de mudar cor
+        }); 
+
+ 
+        renumerarPaginas(); // Renumera as páginas após importar os dados  
+      };  
+      reader.readAsText(file);  
+   };  
+   input.click();  
+}  
+
+
+
+
+// ESTRUTURAR PASTAS DE ARQUIVOS
+
+function criarPastasDeArquivo() {  
+   const zip = new JSZip();  
+   const linhas = document.querySelectorAll('#tabelaRoteiro tbody tr');  
+   linhas.forEach((linha) => {
+    
+    const chapéu = linha.cells[1].querySelector('input').value;  
+    const título = linha.cells[2].querySelector('input').value;  
+    const pasta = `${chapéu}_${título}`;  // apagar o termo '${página}_' se não desejar usar Páginas
+    const subpasta = zip.folder(pasta);  
+    subpasta.folder('fotos_de_apoio');
+    const observacoes = linha.cells[3].querySelector('input').value;  // apagar essa linha se não desejar usar 
+    subpasta.file('observações.txt', observacoes);   // apagar essa linha se não desejar usar Observações
+   });  
+   const anoAtual = new Date().getFullYear();  
+  const nomeArquivo = `Revista ALRN_${anoAtual}.zip`;  
+  zip.generateAsync({ type: 'blob' })  
+   .then((blob) => {  
+    saveAs(blob, nomeArquivo);  
+   });  
+}
+
+
+// JANELA DE AJUDA
+
+function mostrarAjuda() {   
+  const ajuda = `   
+  <h2>Guia de Uso do Sistema de Paginação - SisPag</h2>  
+     O Sistema de Paginação - SisPag é uma ferramenta de gerenciamento de páginas que permite criar, editar e gerenciar páginas de forma fácil e eficiente. Este guia irá ajudá-lo a aprender a operar corretamente o sistema e a aproveitar todas as suas funcionalidades. 
+   <h3>Funções Principais</h3>  
+    <li>Adicionar Linha: Adicione uma nova linha à tabela de páginas.</li>  
+    <li>Excluir Linha: Exclua uma linha da tabela de páginas.</li>  
+    <li>Mover Linha: Mova uma linha para cima ou para baixo na tabela de páginas.</li>  
+    <li>Copiar Linha: Copie uma linha da tabela de páginas.</li>  
+    <li>Colar Linha: Cole uma linha copiada na tabela de páginas.</li>  
+    <li>Salvar Dados: Salve os dados da tabela de páginas localmente.</li>  
+    <li>Carregar Dados: Carregue os dados da tabela de páginas armazenados localmente.</li>  
+    <li>Limpar Dados: Limpe os dados da tabela de páginas.</li>  
+    <li>Importar Arquivo: Importe um arquivo no formato .json para a tabela de páginas.</li>  
+    <li>Exportar Arquivo: Exporte a tabela de páginas em formato .json.</li>  
+    <li>Gerar PDF: Gere um arquivo PDF da tabela de páginas.</li> 
+     
+    <li>Estruturar: Gere pastas de arquivos.</li>
+</ul>  
+    <h3>Funções de Gerenciamento</h3> 
+    
+    <li>Fixar Linha: Fixe uma linha da tabela de páginas para evitar que seja excluída ou movida.</li>  
+    <li>Desfixar Linha: Desfixe uma linha da tabela de páginas para permitir que seja excluída ou movida.</li>  
+   </ul>  
+   <h3>Dicas e Recomendações</h3> 
+    <li>O total de páginas da revista tem que ser múltiplo de 4.</li>  
+    <li>Certifique-se de salvar os dados da tabela de páginas regularmente para evitar perda de dados.</li>  
+    <li>Use a função de copiar e colar para evitar digitar o mesmo conteúdo várias vezes.</li>  
+    <li>Use a função de mover linha para reorganizar a tabela de páginas de forma eficiente.</li>    
+</ul>  
+  
+  `;   
+  const modal = document.createElement('div');   
+  modal.innerHTML = `   
+   <div style="position: absolute; top: 0px; right: 10px;">   
+    <button class="btn-fechar" onclick="fecharAjuda()">X</button>   
+   </div>   
+   <div style="overflow-y: auto; height: 500px;">   
+     ${ajuda}   
+   </div>   
+  `;   
+  modal.style.position = 'absolute';   
+  modal.style.top = '50%';   
+  modal.style.left = '50%';   
+  modal.style.transform = 'translate(-50%, -50%)';   
+  modal.style.background = '#fff';   
+  modal.style.padding = '20px';   
+  modal.style.border = '1px solid #ddd';   
+  modal.style.borderRadius = '10px';   
+  modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';   
+  modal.style.overflowX = 'auto';   
+  modal.style.width = '50%';   
+  modal.className = 'modal';   
+  document.body.appendChild(modal);   
+}   
+   
+function fecharAjuda() {   
+  const modal = document.querySelector('.modal');   
+  if (modal) {   
+   modal.remove();   
+  }   
+}
+
+
+
+// APLICAR REALCE NO STATUS  
+
+function mudarCorSelect(selectElement) {
+    const valorSelecionado = selectElement.value;
+
+    // Resetar a cor para evitar sobreposição de estilos
+    selectElement.style.backgroundColor = '';
+
+    // Aplicar cores com base no valor selecionado
+    if (valorSelecionado === 'Produzir') {
+        selectElement.style.backgroundColor = '#FFBF00';
+    } else if (valorSelecionado === 'Editada') {
+        selectElement.style.backgroundColor = 'lightblue';
+    } else if (valorSelecionado === 'NaoEditada') {
+        selectElement.style.backgroundColor = 'lightcoral';
+    } else if (valorSelecionado === 'Pendente') {
+        selectElement.style.backgroundColor = '#f9f981';
+    } else if (valorSelecionado === 'Finalizada') {
+        selectElement.style.backgroundColor = 'lightgreen';
+    }
+}
+
+document.querySelectorAll('select').forEach(select => {
+    mudarCorSelect(select); // Aplica as cores ao carregar a página
+});
+
+// Chame essa função ao carregar a página para inicializar os valores fixos
+document.addEventListener('DOMContentLoaded', function() {
+preencherTabelaInicial();
+});
+
+    </script>
+
+</body>
+</html>
