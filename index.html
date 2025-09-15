@@ -874,96 +874,126 @@ function toggleButtons(checkbox) {
 // SALVAR DADOS NO LOCAL STOREAGE
 
 function salvarDados() {
-    const linhas = [];
-    document.querySelectorAll('#tabelaRoteiro tbody tr').forEach(linha => {
-        const colunas = linha.querySelectorAll('td input, td select');
-        const dadosLinha = {};
-        dadosLinha.pagina = colunas[0].value;
-        dadosLinha.chapeu = colunas[1].value;
-        dadosLinha.titulo = colunas[2].value;
-        dadosLinha.observacoes = colunas[3].value;
-        dadosLinha.redator = colunas[4].value;
-        dadosLinha.status = colunas[5].value;
-        dadosLinha.checkbox = colunas[6].checked;  // Salva o estado do checkbox
-        linhas.push(dadosLinha);
-    });
-    localStorage.setItem('roteiroRevista', JSON.stringify(linhas));
-    alert('Dados salvos com sucesso!');
+  const linhas = [];
+  document.querySelectorAll('#tabelaRoteiro tbody tr').forEach(linha => {
+    const cells = linha.cells;
+
+    const pagina        = cells[0]?.querySelector('input')?.value ?? '';
+    const chapeu        = cells[1]?.querySelector('input')?.value ?? '';
+    const titulo        = cells[2]?.querySelector('input')?.value ?? '';
+    const observacoes   = cells[3]?.querySelector('input')?.value ?? '';
+
+    // Redator pode ser <select> (novo) ou <input> (dados antigos)
+    const redatorSelect = cells[4]?.querySelector('select');
+    const redatorInput  = cells[4]?.querySelector('input');
+    const redator       = redatorSelect ? redatorSelect.value : (redatorInput?.value ?? '');
+
+    const status        = cells[5]?.querySelector('select')?.value ?? '';
+
+    // Checkbox fica na coluna FIXAR (última)
+    const checkboxEl    = cells[7]?.querySelector('input[type="checkbox"]');
+    const checkbox      = checkboxEl ? checkboxEl.checked : false;
+
+    linhas.push({ pagina, chapeu, titulo, observacoes, redator, status, checkbox });
+  });
+
+  localStorage.setItem('roteiroRevista', JSON.stringify(linhas));
+  alert('Dados salvos com sucesso!');
 }
 
 // CARREGAR DADOS DO LOCAL STOREAGE
 
+// Gera o HTML do <select> de redator, marcando o valor salvo.
+// Se "valor" não estiver na lista, cria uma <option> extra para preservar dado antigo.
+function redatorSelectHTML(valor = '') {
+  const opcoes = [
+    '','Anna Karlla','Camilo','Denise','Gabriela','Gerlane','Julio',
+    'Juliana Celli','Marília','Mulatinho','Rafaela','Thaísa'
+  ];
+  const existe = opcoes.includes(valor);
+  const mkOpt = (v, label = v) =>
+    `<option value="${v.replace(/"/g, '&quot;')}" ${valor === v ? 'selected' : ''}>${label || 'Selecione'}</option>`;
+
+  let html = '<select>';
+  html += mkOpt('', 'Selecione');
+  opcoes.slice(1).forEach(v => html += mkOpt(v));
+  if (valor && !existe) {
+    html += mkOpt(valor, `${valor} (importado)`);
+  }
+  html += '</select>';
+  return html;
+}
+
 function carregarDados() {
-    const dadosSalvos = localStorage.getItem('roteiroRevista');
-    if (dadosSalvos) {
-        const linhas = JSON.parse(dadosSalvos);
-        const tabela = document.getElementById('tabelaRoteiro').querySelector('tbody');
-        
-        // Limpa a tabela antes de carregar os dados
-        tabela.innerHTML = '';
+  const dadosSalvos = localStorage.getItem('roteiroRevista');
+  if (!dadosSalvos) {
+    alert('Nenhum dado encontrado.');
+    return;
+  }
 
-        linhas.forEach(linha => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><input type="text" value="${linha.pagina}" disabled></td>
-                <td><input type="text" placeholder="CHAPÉU" value="${linha.chapeu}"></td>
-                <td><input type="text" placeholder="Título" value="${linha.titulo}"></td>
-                <td><input type="text" placeholder="Observações" value="${linha.observacoes}"></td>
-                <td><input type="text" placeholder="Redator" value="${linha.redator}"></td>
-                <td>
-                    <select class="statusSelect" onchange="mudarCorSelect(this)">
-                        <option value="Produzir" ${linha.status === 'Produzir' ? 'selected' : ''}>Produzir</option>
-                        <option value="Editada" ${linha.status === 'Editada' ? 'selected' : ''}>Editada</option>
-                        <option value="NaoEditada" ${linha.status === 'NaoEditada' ? 'selected' : ''}>Não Editada</option>
-                        <option value="Pendente" ${linha.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
-                        <option value="Finalizada" ${linha.status === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
-                    </select>
-                </td>
-               <td>
-  <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">
-    <i class="fa-solid fa-plus"></i>
-  </button> 
-  <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">
-    <i class="fa-solid fa-minus"></i>
-  </button>
-  <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">
-    <i class="fa-solid fa-arrow-up"></i>
-  </button>  
-  <button class="btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">
-    <i class="fa-solid fa-arrow-down"></i>
-  </button> 
-  <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">
-    <i class="fa-solid fa-copy"></i>
-  </button>
-  <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">
-    <i class="fa-solid fa-clipboard"></i>
-  </button>
-</td>
+  const linhas = JSON.parse(dadosSalvos);
+  const tbody = document.querySelector('#tabelaRoteiro tbody');
+  tbody.innerHTML = '';
 
-                <td>
-                    <input type="checkbox" onclick="toggleButtons(this)" ${linha.checkbox ? 'checked' : ''} title="Bloquear ação">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ccc" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
-                </td>
-            `;
-            tabela.appendChild(tr);
-        });
+  linhas.forEach(linha => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" value="${linha.pagina ?? ''}" disabled></td>
+      <td><input type="text" placeholder="CHAPÉU" value="${linha.chapeu ?? ''}"></td>
+      <td><input type="text" placeholder="Título" value="${linha.titulo ?? ''}"></td>
+      <td><input type="text" placeholder="Observações" value="${linha.observacoes ?? ''}"></td>
+      <td>
+        ${redatorSelectHTML(linha.redator ?? '')}
+      </td>
+      <td>
+        <select class="statusSelect" onchange="mudarCorSelect(this)">
+          <option value="Produzir"   ${linha.status === 'Produzir'    ? 'selected' : ''}>Produzir</option>
+          <option value="Editada"    ${linha.status === 'Editada'     ? 'selected' : ''}>Editada</option>
+          <option value="NaoEditada" ${linha.status === 'NaoEditada'  ? 'selected' : ''}>Não Editada</option>
+          <option value="Pendente"   ${linha.status === 'Pendente'    ? 'selected' : ''}>Pendente</option>
+          <option value="Finalizada" ${linha.status === 'Finalizada'  ? 'selected' : ''}>Finalizada</option>
+        </select>
+      </td>
+      <td>
+        <button class="btn-adicionar" onclick="adicionarLinha(this)" title="Adicionar nova linha abaixo">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <button class="btn-excluir" onclick="excluirLinha(this)" title="Excluir linha">
+          <i class="fa-solid fa-minus"></i>
+        </button>
+        <button class="btn-mover-cima" onclick="moverLinhaCima(this)" title="Mover linha para cima">
+          <i class="fa-solid fa-arrow-up"></i>
+        </button>
+        <button class="btn-mover_baixo btn-mover-baixo" onclick="moverLinhaBaixo(this)" title="Mover linha para baixo">
+          <i class="fa-solid fa-arrow-down"></i>
+        </button>
+        <button class="btn-copiar" onclick="copiarLinha(this)" title="Copiar linha">
+          <i class="fa-solid fa-copy"></i>
+        </button>
+        <button class="btn-colar" onclick="colarLinha(this)" title="Colar linha">
+          <i class="fa-solid fa-clipboard"></i>
+        </button>
+      </td>
+      <td>
+        <input type="checkbox" onclick="toggleButtons(this)" ${linha.checkbox ? 'checked' : ''} title="Bloquear ação">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512">
+          <path fill="#ccc" d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/>
+        </svg>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 
-        // Depois de preencher a tabela, aplicar as cores nos selects
-        document.querySelectorAll('.statusSelect').forEach(select => {
-            mudarCorSelect(select);
-        });
-
-        renumerarPaginas(); // Renumera as páginas após carregar os dados
-    } else {
-        alert('Nenhum dado encontrado.');
-    }
+  // Reaplica cores do status
+  document.querySelectorAll('.statusSelect').forEach(select => mudarCorSelect(select));
+  renumerarPaginas();
 }
 
 // LIMPAR DADOS DO LOCAL STORAGE
 
 function limparDados() {
     // Exibe um alerta de confirmação
-    if (confirm('Deseja apagar todos os dados?')) {
+    if (confirm('Atenção!!! Deseja apagar todos os dados armazenados?')) {
         localStorage.removeItem('roteiroRevista');
         alert('Dados limpos com sucesso!');
         
