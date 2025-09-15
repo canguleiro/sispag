@@ -272,7 +272,23 @@ td input[type="checkbox"] {
                 <td><input type="text" placeholder="CHAPÉU"></td>
                 <td><input type="text" placeholder="Título"></td>
                 <td><input type="text" placeholder="Observações"></td>
-                <td><input type="text" placeholder="Redator"></td>
+                <td>
+  <select>
+    <option value="">Selecione</option>
+    <option value="Anna Karlla">Anna Karlla</option>
+    <option value="Camilo">Camilo</option>
+    <option value="Denise">Denise</option>
+    <option value="Gabriela">Gabriela</option>
+    <option value="Gerlane">Gerlane</option>
+    <option value="Julio">Julio</option>
+    <option value="Juliana Celli">Juliana Celli</option>
+    <option value="Marília">Marília</option>
+    <option value="Mulatinho">Mulatinho</option>
+    <option value="Rafaela">Rafaela</option>
+    <option value="Thaísa">Thaísa</option>
+  </select>
+</td>
+
                 <td>
                     <select id="statusSelect" onchange="mudarCorSelect(this)">
                         <option value="Produzir">Produzir</option>
@@ -539,7 +555,23 @@ function preencherTabelaInicial() {
             <td><input type="text" placeholder="CHAPÉU" value="${linha.chapéu}" ${['GALERIA DOS DEPUTADOS', 'PALAVRA DO PRESIDENTE', 'SUMÁRIO E EXPEDIENTE', 'AGORA É LEI!', 'RN EM FOTOS', 'PRODUÇÃO E SERVIÇOS', 'LINHA DO TEMPO', 'ELES FAZEM A ALRN', 'FRASES DOS DEPUTADOS'].includes(linha.chapéu) ? 'disabled' : ''}></td>   
             <td><input type="text" placeholder="Título" value="${linha.titulo}"></td>   
             <td><input type="text" placeholder="Observações" value="${linha.observacoes}"></td>   
-            <td><input type="text" placeholder="Redator" value="${linha.redator}"></td>   
+            <td>
+  <select>
+    <option value="">Selecione</option>
+    <option value="Anna Karlla" ${linha.redator === 'Anna Karlla' ? 'selected' : ''}>Anna Karlla</option>
+    <option value="Camilo" ${linha.redator === 'Camilo' ? 'selected' : ''}>Camilo</option>
+    <option value="Denise" ${linha.redator === 'Denise' ? 'selected' : ''}>Denise</option>
+    <option value="Gabriela" ${linha.redator === 'Gabriela' ? 'selected' : ''}>Gabriela</option>
+    <option value="Gerlane" ${linha.redator === 'Gerlane' ? 'selected' : ''}>Gerlane</option>
+    <option value="Julio" ${linha.redator === 'Julio' ? 'selected' : ''}>Julio</option>
+    <option value="Juliana Celli" ${linha.redator === 'Juliana Celli' ? 'selected' : ''}>Juliana Celli</option>
+    <option value="Marília" ${linha.redator === 'Marília' ? 'selected' : ''}>Marília</option>
+    <option value="Mulatinho" ${linha.redator === 'Mulatinho' ? 'selected' : ''}>Mulatinho</option>
+    <option value="Rafaela" ${linha.redator === 'Rafaela' ? 'selected' : ''}>Rafaela</option>
+    <option value="Thaísa" ${linha.redator === 'Thaísa' ? 'selected' : ''}>Thaísa</option>
+  </select>
+</td>
+  
             <td>   
               <select id="statusSelect" onchange="mudarCorSelect(this)"> 
                 <option value="Produzir" ${linha.status === 'Produzir' ? 'selected' : ''}>Produzir</option>  
@@ -601,7 +633,23 @@ function adicionarLinha(botao) {
         <td><input type="text" placeholder="CHAPÉU"></td>
         <td><input type="text" placeholder="Título"></td>
         <td><input type="text" placeholder="Observações"></td>
-        <td><input type="text" placeholder="Redator"></td>
+        <td>
+  <select>
+    <option value="">Selecione</option>
+    <option value="Anna Karlla">Anna Karlla</option>
+    <option value="Camilo">Camilo</option>
+    <option value="Denise">Denise</option>
+    <option value="Gabriela">Gabriela</option>
+    <option value="Gerlane">Gerlane</option>
+    <option value="Julio">Julio</option>
+    <option value="Juliana Celli">Juliana Celli</option>
+    <option value="Marília">Marília</option>
+    <option value="Mulatinho">Mulatinho</option>
+    <option value="Rafaela">Rafaela</option>
+    <option value="Thaísa">Thaísa</option>
+  </select>
+</td>
+
         <td>
             <select id="statusSelect" onchange="mudarCorSelect(this)">
                 <option value="Produzir">Produzir</option>
