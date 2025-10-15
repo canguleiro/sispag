@@ -248,8 +248,8 @@
         function toggleEntregueEstado(linha, entregue) {
             const icon = linha.querySelector('.btn-entregue i');
             linha.dataset.entregue = entregue;
-            icon.classList.toggle('text-green-500', entregue);
-            icon.classList.toggle('dark:text-green-400', entregue);
+            icon.classList.toggle('text-blue-500', entregue);
+            icon.classList.toggle('dark:text-blue-400', entregue);
             icon.classList.toggle('text-gray-400', !entregue);
             icon.classList.toggle('dark:text-gray-500', !entregue);
         }
@@ -429,7 +429,7 @@
                             <li><strong>Adicionar/Excluir Linha:</strong> Use os ícones <i class="fas fa-plus"></i> e <i class="fas fa-minus"></i> para gerenciar as linhas.</li>
                             <li><strong>Reordenar Linhas:</strong> Clique e arraste uma linha para reordená-la. A numeração das páginas é atualizada automaticamente.</li>
                             <li><strong>Fixar Linha:</strong> Clique no ícone de cadeado <i class="fas fa-lock"></i> para impedir que uma linha seja movida ou excluída.</li>
-                            <li><strong>Marcar como Entregue:</strong> Clique no ícone de check <i class="fas fa-check-circle"></i> para indicar que a matéria foi entregue.</li>
+                            <li><strong>Marcar como Entregue:</strong> Clique no ícone de check <i class="fas fa-check-circle text-blue-500"></i> para indicar que a matéria foi entregue.</li>
                             <li><strong>Salvar/Carregar:</strong> Salve seu progresso no navegador com "Salvar Dados" e recupere-o com "Carregar Dados".</li>
                             <li><strong>Importar/Exportar:</strong> Compartilhe seu roteiro com outros usando os botões "Importar" e "Exportar" (formato .json).</li>
                             <li><strong>Gerar PDF:</strong> Exporte a tabela para um arquivo PDF, em versão completa ou resumida.</li>
