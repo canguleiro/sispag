@@ -117,7 +117,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512" class="mx-auto" fill="#9ca3af"><path d="M144 144v48h160v-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64v192c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64h16z"/></svg>
             </td>
             <td class="px-4 py-2"><input type="text" placeholder="Página" class="bg-transparent w-full focus:outline-none font-semibold" disabled></td>
-            <td class="px-4 py-2"><input type="text" placeholder="Chapéu" class="bg-gray-200 dark:bg-gray-700 w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"></td>
+            <td class="px-4 py-2"><input type="text" placeholder="Chapéu" class="uppercase bg-gray-200 dark:bg-gray-700 w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"></td>
             <td class="px-4 py-2"><input type="text" placeholder="Título" class="bg-gray-200 dark:bg-gray-700 w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"></td>
             <td class="px-4 py-2"><input type="text" placeholder="Observações" class="bg-gray-200 dark:bg-gray-700 w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"></td>
             <td class="px-4 py-2">
@@ -398,22 +398,43 @@
 
             doc.save(`Roteiro_${titulo}${resumo ? '_resumo' : ''}.pdf`);
         }
+        
+        function normalizarNomePasta(texto) {
+            if (!texto) return '';
+            return texto.toString()
+                .normalize('NFD') // Decompõe caracteres acentuados
+                .replace(/[\u0300-\u036f]/g, '') // Remove os diacríticos (acentos)
+                .replace(/\s+/g, '_') // Substitui espaços por underscores
+                .replace(/[^\w\s_]/g, '') // Remove caracteres especiais restantes, exceto underscore
+                .replace(/__+/g, '_'); // Substitui múltiplos underscores por um único
+        }
 
         function criarPastasDeArquivo() {
             const zip = new JSZip();
             const data = getTableData();
             data.forEach(linha => {
-                if (linha.chapeu && linha.titulo) {
-                    const pastaNome = `${linha.chapeu}_${linha.titulo}`.replace(/[^a-zA-Z0-9_]/g, '_');
-                    const pasta = zip.folder(pastaNome);
-                    pasta.folder('fotos_de_apoio');
-                    pasta.file('observacoes.txt', linha.observacoes || '');
+                if (linha.chapeu || linha.titulo) {
+                    const chapeuNormalizado = normalizarNomePasta(linha.chapeu.toUpperCase());
+                    const tituloNormalizado = normalizarNomePasta(linha.titulo.toLowerCase());
+                    
+                    let pastaNome = '';
+                    if (chapeuNormalizado && tituloNormalizado) {
+                        pastaNome = `${chapeuNormalizado}_${tituloNormalizado}`;
+                    } else {
+                        pastaNome = chapeuNormalizado || tituloNormalizado;
+                    }
+
+                    if (pastaNome) {
+                        const pasta = zip.folder(pastaNome);
+                        pasta.folder('fotos_de_apoio');
+                        pasta.file('observacoes.txt', linha.observacoes || '');
+                    }
                 }
             });
 
             const anoAtual = new Date().getFullYear();
             zip.generateAsync({ type: 'blob' }).then(blob => {
-                saveAs(blob, `Revista ALRN_${anoAtual}.zip`);
+                saveAs(blob, `Revista ALRN_2025.zip`);
             });
         }
         
@@ -703,11 +724,11 @@
         
         function popularBotoesDeAcao() {
              const acoes = `
-                <button data-action="salvar" title="Salvar" class="h-10 w-10 flex items-center justify-center text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"><i class="fas fa-save"></i></button>
-                <button data-action="carregar" title="Carregar" class="h-10 w-10 flex items-center justify-center text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"><i class="fas fa-upload"></i></button>
-                <button data-action="limpar" title="Limpar" class="h-10 w-10 flex items-center justify-center text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"><i class="fas fa-trash-alt"></i></button>
-                <button data-action="importar" title="Importar" class="h-10 w-10 flex items-center justify-center text-white bg-green-500 rounded-full hover:bg-green-600 transition-colors"><i class="fas fa-file-import"></i></button>
-                <button data-action="exportar" title="Exportar" class="h-10 w-10 flex items-center justify-center text-white bg-green-500 rounded-full hover:bg-green-600 transition-colors"><i class="fas fa-file-export"></i></button>
+                <button data-action="salvar" title="Salvar" class="h-10 w-10 flex items-center justify-center text-white bg-[#3C82F6] rounded-full hover:bg-blue-700 transition-colors"><i class="fas fa-save"></i></button>
+                <button data-action="carregar" title="Carregar" class="h-10 w-10 flex items-center justify-center text-white bg-[#3C82F6] rounded-full hover:bg-blue-700 transition-colors"><i class="fas fa-upload"></i></button>
+                <button data-action="limpar" title="Limpar" class="h-10 w-10 flex items-center justify-center text-white bg-[#3C82F6] rounded-full hover:bg-blue-700 transition-colors"><i class="fas fa-trash-alt"></i></button>
+                <button data-action="importar" title="Importar" class="h-10 w-10 flex items-center justify-center text-white bg-[#22C55E] rounded-full hover:bg-green-600 transition-colors"><i class="fas fa-file-import"></i></button>
+                <button data-action="exportar" title="Exportar" class="h-10 w-10 flex items-center justify-center text-white bg-[#22C55E] rounded-full hover:bg-green-600 transition-colors"><i class="fas fa-file-export"></i></button>
                 <div class="relative inline-block text-left group">
                     <button title="Gerar PDF" class="h-10 w-10 flex items-center justify-center text-gray-800 bg-sispag-yellow rounded-full hover:bg-yellow-500 transition-colors"><i class="fas fa-file-pdf"></i></button>
                     <div class="origin-top-right absolute right-0 mt-0 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
