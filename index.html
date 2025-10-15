@@ -70,7 +70,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center gap-4 mb-4 sm:mb-0">
                 <img src="https://elegis.al.rn.leg.br/elegis-api/elegis-api/parametro/brasao" class="h-16" alt="Brasão ALRN">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">SISPAG - REVISTA ALRN 2025</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">SisPag - Revista ALRN</h1>
             </div>
             <div id="cabecalho-acoes" class="flex flex-wrap gap-2 justify-center">
                 <!-- Botões de ação do cabeçalho preenchidos pelo JS -->
@@ -703,13 +703,13 @@
         
         function popularBotoesDeAcao() {
              const acoes = `
-                <button data-action="salvar" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"><i class="fas fa-save mr-2"></i></button>
-                <button data-action="carregar" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"><i class="fas fa-upload mr-2"></i></button>
-                <button data-action="limpar" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"><i class="fas fa-trash-alt mr-2"></i></button>
-                <button data-action="importar" class="px-3 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors"><i class="fas fa-file-import mr-2"></i>Importar</button>
-                <button data-action="exportar" class="px-3 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors"><i class="fas fa-file-export mr-2"></i>Exportar</button>
+                <button data-action="salvar" title="Salvar" class="h-10 w-10 flex items-center justify-center text-white bg-gray-500 rounded-full hover:bg-gray-600 transition-colors"><i class="fas fa-save"></i></button>
+                <button data-action="carregar" title="Carregar" class="h-10 w-10 flex items-center justify-center text-white bg-gray-500 rounded-full hover:bg-gray-600 transition-colors"><i class="fas fa-upload"></i></button>
+                <button data-action="limpar" title="Limpar" class="h-10 w-10 flex items-center justify-center text-white bg-gray-500 rounded-full hover:bg-gray-600 transition-colors"><i class="fas fa-trash-alt"></i></button>
+                <button data-action="importar" title="Importar" class="h-10 w-10 flex items-center justify-center text-white bg-teal-600 rounded-full hover:bg-teal-700 transition-colors"><i class="fas fa-file-import"></i></button>
+                <button data-action="exportar" title="Exportar" class="h-10 w-10 flex items-center justify-center text-white bg-teal-600 rounded-full hover:bg-teal-700 transition-colors"><i class="fas fa-file-export"></i></button>
                 <div class="relative inline-block text-left group">
-                    <button class="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"><i class="fas fa-file-pdf mr-2"></i>Gerar PDF</button>
+                    <button title="Gerar PDF" class="h-10 w-10 flex items-center justify-center text-white bg-purple-600 rounded-full hover:bg-purple-700 transition-colors"><i class="fas fa-file-pdf"></i></button>
                     <div class="origin-top-right absolute right-0 mt-0 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
                         <div class="py-1">
                             <a href="#" data-action="pdfCompleto" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Roteiro Completo</a>
@@ -717,9 +717,9 @@
                         </div>
                     </div>
                 </div>
-                <button data-action="estruturar" class="px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"><i class="fas fa-folder-plus mr-2"></i>Estruturar</button>
-                <button data-action="ajuda" class="px-3 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg hover:bg-gray-600 transition-colors"><i class="fas fa-question-circle mr-2"></i>Ajuda</button>
-                <button data-action="theme" title="Alterar Tema" class="px-3 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg hover:bg-gray-600 transition-colors"><i class="fas fa-sun"></i></button>
+                <button data-action="estruturar" title="Estruturar" class="h-10 w-10 flex items-center justify-center text-white bg-purple-600 rounded-full hover:bg-purple-700 transition-colors"><i class="fas fa-folder-plus"></i></button>
+                <button data-action="ajuda" title="Ajuda" class="h-10 w-10 flex items-center justify-center text-white bg-gray-500 rounded-full hover:bg-gray-600 transition-colors"><i class="fas fa-question-circle"></i></button>
+                <button data-action="theme" title="Alterar Tema" class="h-10 w-10 flex items-center justify-center text-white bg-gray-500 rounded-full hover:bg-gray-600 transition-colors"><i class="fas fa-sun"></i></button>
              `;
              cabecalhoAcoes.innerHTML = acoes;
              rodapeAcoes.innerHTML = acoes;
@@ -767,6 +767,4 @@
     </script>
 </body>
 </html>
-
-
 
