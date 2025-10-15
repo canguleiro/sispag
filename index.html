@@ -137,8 +137,6 @@
                 <div class="flex items-center justify-center gap-2">
                     <button class="btn-adicionar h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" title="Adicionar linha abaixo"><i class="fas fa-plus text-green-500 dark:text-green-400"></i></button>
                     <button class="btn-excluir h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" title="Excluir linha"><i class="fas fa-minus text-red-500 dark:text-red-400"></i></button>
-                    <button class="btn-copiar h-8 w-8 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 transition-colors" title="Copiar linha"><i class="fas fa-copy text-white"></i></button>
-                    <button class="btn-colar h-8 w-8 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 transition-colors" title="Colar linha"><i class="fas fa-paste text-white"></i></button>
                     <button class="btn-entregue h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" title="Marcar como entregue"><i class="fas fa-check-circle text-gray-400 dark:text-gray-500"></i></button>
                 </div>
             </td>
@@ -432,7 +430,6 @@
                             <li><strong>Reordenar Linhas:</strong> Clique e arraste uma linha para reordená-la. A numeração das páginas é atualizada automaticamente.</li>
                             <li><strong>Fixar Linha:</strong> Clique no ícone de cadeado <i class="fas fa-lock"></i> para impedir que uma linha seja movida ou excluída.</li>
                             <li><strong>Marcar como Entregue:</strong> Clique no ícone de check <i class="fas fa-check-circle"></i> para indicar que a matéria foi entregue.</li>
-                            <li><strong>Copiar/Colar:</strong> Use os ícones <i class="fas fa-copy"></i> e <i class="fas fa-paste"></i> para duplicar o conteúdo de uma linha.</li>
                             <li><strong>Salvar/Carregar:</strong> Salve seu progresso no navegador com "Salvar Dados" e recupere-o com "Carregar Dados".</li>
                             <li><strong>Importar/Exportar:</strong> Compartilhe seu roteiro com outros usando os botões "Importar" e "Exportar" (formato .json).</li>
                             <li><strong>Gerar PDF:</strong> Exporte a tabela para um arquivo PDF, em versão completa ou resumida.</li>
@@ -614,27 +611,6 @@
                     adicionarLinha({}, linha);
                 } else if (button.classList.contains('btn-excluir')) {
                     excluirLinha(linha);
-                } else if (button.classList.contains('btn-copiar')) {
-                    const data = getTableData().find(d => d.pagina === linha.querySelector('td:nth-child(2) input').value);
-                    navigator.clipboard.writeText(JSON.stringify(data))
-                        .then(() => showNotification('Linha copiada!'))
-                        .catch(() => showNotification('Falha ao copiar.', 'error'));
-                } else if (button.classList.contains('btn-colar')) {
-                     navigator.clipboard.readText().then(text => {
-                         try {
-                             const data = JSON.parse(text);
-                             linha.querySelector('.redator-select').value = data.redator;
-                             linha.querySelector('.statusSelect').value = data.status;
-                             linha.querySelector('input[placeholder="Chapéu"]').value = data.chapeu;
-                             linha.querySelector('input[placeholder="Título"]').value = data.titulo;
-                             linha.querySelector('input[placeholder="Observações"]').value = data.observacoes;
-                             mudarCorSelect(linha.querySelector('.statusSelect'));
-                             toggleEntregueEstado(linha, data.entregue || false);
-                             atualizarFiltroRedator();
-                         } catch (err) {
-                            showNotification('Área de transferência vazia ou inválida.', 'error');
-                         }
-                     });
                 } else if (button.classList.contains('btn-entregue')) {
                     const isEntregue = linha.dataset.entregue === 'true';
                     toggleEntregueEstado(linha, !isEntregue);
@@ -734,7 +710,7 @@
                 <button data-action="exportar" class="px-3 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors"><i class="fas fa-file-export mr-2"></i>Exportar</button>
                 <div class="relative inline-block text-left group">
                     <button class="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"><i class="fas fa-file-pdf mr-2"></i>Gerar PDF</button>
-                    <div class="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
+                    <div class="origin-top-right absolute right-0 mt-0 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
                         <div class="py-1">
                             <a href="#" data-action="pdfCompleto" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Roteiro Completo</a>
                             <a href="#" data-action="pdfResumo" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Roteiro Resumo</a>
@@ -791,5 +767,4 @@
     </script>
 </body>
 </html>
-
 
