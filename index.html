@@ -93,7 +93,7 @@
                                 <!-- Options populated by JS -->
                             </select>
                         </th>
-                        <th scope="col" class="px-4 py-3 w-36">Status</th>
+                        <th scope="col" class="px-4 py-3 w-36">EDIÇÃO</th>
                         <th scope="col" class="px-4 py-3 w-40 text-center">Ação</th>
                     </tr>
                 </thead>
@@ -128,20 +128,18 @@
             </td>
             <td class="px-4 py-2">
                 <select class="statusSelect w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
-                    <option value="Produzir">Produzir</option>
-                    <option value="Editada">Editada</option>
-                    <option value="Editar">Editar</option>
                     <option value="Pendente">Pendente</option>
-                    <option value="Finalizada">Finalizada</option>
+                    <option value="Atualizar">Atualizar</option>
+                    <option value="Editada">Editada</option>
                 </select>
             </td>
             <td class="px-4 py-2">
                 <div class="flex items-center justify-center gap-2">
-                    <button class="btn-adicionar" title="Adicionar linha abaixo"><i class="fas fa-plus p-2 text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"></i></button>
-                    <button class="btn-excluir" title="Excluir linha"><i class="fas fa-trash p-2 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"></i></button>
-                    <button class="btn-copiar" title="Copiar linha"><i class="fas fa-copy p-2 text-sispag-yellow dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300"></i></button>
-                    <button class="btn-colar" title="Colar linha"><i class="fas fa-paste p-2 text-sispag-yellow dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300"></i></button>
-                    <button class="btn-entregue" title="Marcar como entregue"><i class="fas fa-check-circle p-2 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400"></i></button>
+                    <button class="btn-adicionar h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" title="Adicionar linha abaixo"><i class="fas fa-plus text-green-500 dark:text-green-400"></i></button>
+                    <button class="btn-excluir h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" title="Excluir linha"><i class="fas fa-minus text-red-500 dark:text-red-400"></i></button>
+                    <button class="btn-copiar h-8 w-8 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 transition-colors" title="Copiar linha"><i class="fas fa-copy text-white"></i></button>
+                    <button class="btn-colar h-8 w-8 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 transition-colors" title="Colar linha"><i class="fas fa-paste text-white"></i></button>
+                    <button class="btn-entregue h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" title="Marcar como entregue"><i class="fas fa-check-circle text-gray-400 dark:text-gray-500"></i></button>
                 </div>
             </td>
         </tr>
@@ -165,11 +163,9 @@
         const rodapeAcoes = document.getElementById('rodape-acoes');
         
         const statusColors = {
-            'Produzir': 'bg-sispag-yellow text-gray-900 font-bold',
-            'Editada': 'bg-blue-500 text-white',
-            'Editar': 'bg-red-500 text-white',
-            'Pendente': 'bg-orange-500 text-white',
-            'Finalizada': 'bg-green-500 text-white',
+            'Pendente': 'bg-red-500 text-white',
+            'Atualizar': 'bg-sispag-yellow text-gray-900 font-bold',
+            'Editada': 'bg-green-500 text-white',
         };
 
         const redatores = ["Agência", "Anninha", "Camilo", "Denise", "Eduardo Maia", "Gabriela", "Gerlane", "João Gilberto", "Julio", "Juliana", "Mariana Rocha", "Marília", "Mulatinho", "Rafaela", "Sayonara", "Thaisa", "Colaborador"].sort();
@@ -204,7 +200,7 @@
             inputs[2].value = data.titulo || '';
             inputs[3].value = data.observacoes || '';
             selectRedator.value = data.redator || '';
-            inputs[5].value = data.status || 'Produzir';
+            inputs[5].value = data.status || 'Pendente';
             
             toggleFixarEstado(novaLinha, novaLinha.dataset.fixado === 'true');
             toggleEntregueEstado(novaLinha, novaLinha.dataset.entregue === 'true');
@@ -390,8 +386,8 @@
                 return row;
             });
             const headers = resumo ? 
-                [["PÁGINA", "CHAPÉU", "TÍTULO", "OBSERVAÇÕES", "STATUS"]] :
-                [["PÁGINA", "CHAPÉU", "TÍTULO", "OBSERVAÇÕES", "REDATOR", "STATUS"]];
+                [["PÁGINA", "CHAPÉU", "TÍTULO", "OBSERVAÇÕES", "EDIÇÃO"]] :
+                [["PÁGINA", "CHAPÉU", "TÍTULO", "OBSERVAÇÕES", "REDATOR", "EDIÇÃO"]];
 
             doc.autoTable({
                 head: headers,
@@ -432,11 +428,11 @@
                         <p>O SisPag é uma ferramenta para gerenciar o roteiro de páginas de uma publicação de forma eficiente.</p>
                         <h3 class="font-semibold text-lg mt-4">Funcionalidades Principais:</h3>
                         <ul class="list-disc list-inside space-y-1">
-                            <li><strong>Adicionar/Excluir Linha:</strong> Use os ícones <i class="fas fa-plus text-green-500"></i> e <i class="fas fa-trash text-red-500"></i> para gerenciar as linhas.</li>
+                            <li><strong>Adicionar/Excluir Linha:</strong> Use os ícones <i class="fas fa-plus"></i> e <i class="fas fa-minus"></i> para gerenciar as linhas.</li>
                             <li><strong>Reordenar Linhas:</strong> Clique e arraste uma linha para reordená-la. A numeração das páginas é atualizada automaticamente.</li>
                             <li><strong>Fixar Linha:</strong> Clique no ícone de cadeado <i class="fas fa-lock"></i> para impedir que uma linha seja movida ou excluída.</li>
-                            <li><strong>Marcar como Entregue:</strong> Clique no ícone de check <i class="fas fa-check-circle text-green-500"></i> para indicar que a matéria foi entregue.</li>
-                            <li><strong>Copiar/Colar:</strong> Use os ícones <i class="fas fa-copy text-sispag-yellow"></i> e <i class="fas fa-paste text-sispag-yellow"></i> para duplicar o conteúdo de uma linha.</li>
+                            <li><strong>Marcar como Entregue:</strong> Clique no ícone de check <i class="fas fa-check-circle"></i> para indicar que a matéria foi entregue.</li>
+                            <li><strong>Copiar/Colar:</strong> Use os ícones <i class="fas fa-copy"></i> e <i class="fas fa-paste"></i> para duplicar o conteúdo de uma linha.</li>
                             <li><strong>Salvar/Carregar:</strong> Salve seu progresso no navegador com "Salvar Dados" e recupere-o com "Carregar Dados".</li>
                             <li><strong>Importar/Exportar:</strong> Compartilhe seu roteiro com outros usando os botões "Importar" e "Exportar" (formato .json).</li>
                             <li><strong>Gerar PDF:</strong> Exporte a tabela para um arquivo PDF, em versão completa ou resumida.</li>
@@ -711,20 +707,20 @@
 
         function preencherTabelaInicial() {
             const linhasFixas = [
-                { pagina: 'Capa', chapeu: '', titulo: '', observacoes: '', redator: '', status: 'Produzir', paginaFixa: true, fixado: true, entregue: false },
-                { pagina: '2', chapeu: 'GALERIA DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', paginaFixa: true, fixado: true, entregue: false },
-                { pagina: '3', chapeu: 'PALAVRA DO PRESIDENTE', titulo: '', observacoes: '', redator: '', status: 'Produzir', paginaFixa: true, fixado: true, entregue: false },
-                { pagina: '', chapeu: 'SUMÁRIO E EXPEDIENTE', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'AGORA É LEI!', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'RN EM FOTOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'RN EM FOTOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'PRODUÇÃO E SERVIÇOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'LINHA DO TEMPO', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'ELES FAZEM A ALRN', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: '', chapeu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Produzir', entregue: false },
-                { pagina: 'Contracapa', chapeu: '', titulo: '', observacoes: '', redator: '', status: 'Produzir', paginaFixa: true, fixado: true, entregue: false },
+                { pagina: 'Capa', chapeu: '', titulo: '', observacoes: '', redator: '', status: 'Pendente', paginaFixa: true, fixado: true, entregue: false },
+                { pagina: '2', chapeu: 'GALERIA DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', paginaFixa: true, fixado: true, entregue: false },
+                { pagina: '3', chapeu: 'PALAVRA DO PRESIDENTE', titulo: '', observacoes: '', redator: '', status: 'Pendente', paginaFixa: true, fixado: true, entregue: false },
+                { pagina: '', chapeu: 'SUMÁRIO E EXPEDIENTE', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'AGORA É LEI!', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'RN EM FOTOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'RN EM FOTOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'PRODUÇÃO E SERVIÇOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'LINHA DO TEMPO', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'ELES FAZEM A ALRN', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: '', chapeu: 'FRASES DOS DEPUTADOS', titulo: '', observacoes: '', redator: '', status: 'Pendente', entregue: false },
+                { pagina: 'Contracapa', chapeu: '', titulo: '', observacoes: '', redator: '', status: 'Pendente', paginaFixa: true, fixado: true, entregue: false },
             ];
             loadTableData(linhasFixas);
         }
@@ -738,7 +734,7 @@
                 <button data-action="exportar" class="px-3 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors"><i class="fas fa-file-export mr-2"></i>Exportar</button>
                 <div class="relative inline-block text-left group">
                     <button class="px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"><i class="fas fa-file-pdf mr-2"></i>Gerar PDF</button>
-                    <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
+                    <div class="origin-top-right absolute right-0 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
                         <div class="py-1">
                             <a href="#" data-action="pdfCompleto" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Roteiro Completo</a>
                             <a href="#" data-action="pdfResumo" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Roteiro Resumo</a>
@@ -795,5 +791,4 @@
     </script>
 </body>
 </html>
-
 
